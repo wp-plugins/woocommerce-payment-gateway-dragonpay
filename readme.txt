@@ -1,5 +1,5 @@
 === Plugin Name ===
-Contributors: Dennis Paler <dpaler@shockwebstudio.com>
+Contributors: akosidencio
 Donate link: http://shockwebstudio.com/
 Tags: payment gateway, dragonpay, woocommerce
 Requires at least: 3.0.1
@@ -33,4 +33,3 @@ assets/dragonpay.jpg
 == Changelog ==
 
 
-`<?php code(); // goes in backticks ?>`
