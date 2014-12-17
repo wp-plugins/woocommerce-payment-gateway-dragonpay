@@ -28,8 +28,10 @@ e.g.
 
 == Screenshots ==
 
-assets/dragonpay.jpg
+screenshot-1.png
 
 == Changelog ==
+
+version 1.0
 
 
