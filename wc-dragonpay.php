@@ -1,20 +1,29 @@
 <?php
 /**
- * Dragonpay WooCommerce Shopping Cart Plugin
+ * Dragonpay WooCommerce Plugin
  * 
- * @author Dennis Paler - <dpaler@shockwebstudio.com>
- * @version 1.0
- * @example For callback : http://example.com/?wc-api=WC_Dragonpay_Gateway
+ * @author dennis.paler<dpaler@shockwebstudio.com>
+ * @version 2.3.0
+ * @example For callback : http://shoppingcarturl/?wc-api=WC_Dragonpay_Gateway
  */
 
 /**
- * Plugin Name: WooCommerce Dragonpay Plugin
- * Description: WooCommerce Dragonpay plugin  is a payment gateway plugin/extension for WooCommerce Shopping Cart
+ * Plugin Name: WooCommerce Dragonpay
+ * Description: WooCommerce Dragonpay Plugin
+ * Author: dennis.paler
+ * Author URI: http:/www.shockwebstudio.com/
+ * Version: 1.1.0
+ * License: MIT
+ * For callback : http://shoppingcarturl/?wc-api=WC_Dragonpay_Gateway
  */
 
+/**
+ * If WooCommerce plugin is not available
+ * 
+ */
 function wcdragonpay_woocommerce_fallback_notice() {
     $message = '<div class="error">';
-    $message .= '<p>' . __( 'WooCommerce Dragonpay Gateway depends on the last version of <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> to work!' , 'wcdragonpay' ) . '</p>';
+    $message .= '<p>' . __( 'WooCommerce dragonpay Gateway depends on the last version of <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> to work!' , 'wcdragonpay' ) . '</p>';
     $message .= '</div>';
     echo $message;
 }
@@ -23,7 +32,7 @@ function wcdragonpay_woocommerce_fallback_notice() {
 add_action( 'plugins_loaded', 'wcdragonpay_gateway_load', 0 );
 
 /**
- * Load Dragonpay gateway plugin function
+ * Load dragonpay gateway plugin function
  * 
  * @return mixed
  */
@@ -39,7 +48,7 @@ function wcdragonpay_gateway_load() {
     add_filter( 'woocommerce_payment_gateways', 'wcdragonpay_add_gateway' );
 
     /**
-     * Add Dragonpay gateway to ensure WooCommerce can load it
+     * Add dragonpay gateway to ensure WooCommerce can load it
      * 
      * @param array $methods
      * @return array
@@ -50,13 +59,13 @@ function wcdragonpay_gateway_load() {
     }
 
     /**
-     * Define the Dragonpay gateway
+     * Define the dragonpay gateway
      * 
      */
     class WC_Dragonpay_Gateway extends WC_Payment_Gateway {
 
         /**
-         * Construct the Dragonay gateway class
+         * Construct the dragonpay gateway class
          * 
          * @global mixed $woocommerce
          */
@@ -67,7 +76,7 @@ function wcdragonpay_gateway_load() {
             $this->icon = plugins_url( 'images/dragonpay.png', __FILE__ );
             $this->has_fields = false;
             $this->pay_url = 'http://test.dragonpay.ph/Pay.aspx?';
-            $this->method_title = __( 'Dragonpay', 'wcdragonpay' );
+            $this->method_title = __( 'dragonpay', 'wcdragonpay' );
 
             // Load the form fields.
             $this->init_form_fields();
@@ -83,19 +92,16 @@ function wcdragonpay_gateway_load() {
 
             // Actions.
             add_action( 'valid_dragonpay_request_returnurl', array( &$this, 'check_dragonpay_response_returnurl' ) );
-            add_action( 'valid_dragonpay_request_callback', array( &$this, 'check_dragonpay_response_callback' ) );
             add_action( 'woocommerce_receipt_dragonpay', array( &$this, 'receipt_page' ) );
-            
+			
             //save setting configuration
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-                        
-            // Payment listener/API hook
-            add_action( 'woocommerce_api_wc_dragonpay_gateway', array( $this, 'check_ipn_response' ) );
+						
 
             // Checking if merchant_id is not empty.
             $this->merchant_id == '' ? add_action( 'admin_notices', array( &$this, 'merchant_id_missing_message' ) ) : '';
 
-            // Checking if password is not empty.
+            // Checking if verify_key is not empty.
             $this->password == '' ? add_action( 'admin_notices', array( &$this, 'password_missing_message' ) ) : '';
         }
 
@@ -119,7 +125,7 @@ function wcdragonpay_gateway_load() {
         public function admin_options() {
             ?>
             <h3><?php _e( 'Dragonpay Online Payment', 'wcdragonpay' ); ?></h3>
-            <p><?php _e( 'Dragonpay Online Payment works by sending the user to Dragonpay to enter their payment information.', 'wcdragonpay' ); ?></p>
+            <p><?php _e( 'Dragonpay Online Payment works by sending the user to dragonpay to enter their payment information.', 'wcdragonpay' ); ?></p>
             <table class="form-table">
                 <?php $this->generate_settings_html(); ?>
             </table><!--/.form-table-->
@@ -136,31 +142,31 @@ function wcdragonpay_gateway_load() {
                 'enabled' => array(
                     'title' => __( 'Enable/Disable', 'wcdragonpay' ),
                     'type' => 'checkbox',
-                    'label' => __( 'Enable Dragonpay', 'wcdragonpay' ),
+                    'label' => __( 'Enable dragonpay', 'wcdragonpay' ),
                     'default' => 'yes'
                 ),
                 'title' => array(
                     'title' => __( 'Title', 'wcdragonpay' ),
                     'type' => 'text',
                     'description' => __( 'This controls the title which the user sees during checkout.', 'wcdragonpay' ),
-                    'default' => __( 'Dragonpay Philippines Online Payment', 'wcdragonpay' )
+                    'default' => __( 'dragonpay Malaysia Online Payment', 'wcdragonpay' )
                 ),
                 'description' => array(
                     'title' => __( 'Description', 'wcdragonpay' ),
                     'type' => 'textarea',
                     'description' => __( 'This controls the description which the user sees during checkout.', 'wcdragonpay' ),
-                    'default' => __( 'Pay with Dragonpay Philippines Online Payment', 'wcdragonpay' )
+                    'default' => __( 'Pay with dragonpay Malaysia Online Payment', 'wcdragonpay' )
                 ),
                 'merchant_id' => array(
                     'title' => __( 'Merchant ID', 'wcdragonpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Dragonpay Merchant ID.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sDragonay Account%s.', 'wcdragonpay' ), '<a href="https://www.dragonpay.ph/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your dragonpay Merchant ID.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sdragonpay Account%s.', 'wcdragonpay' ), '<a href="https://www.onlinepayment.com.my/dragonpay/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'password' => array(
                     'title' => __( 'Password', 'wcdragonpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Dragonpay Password.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sDragonpay Account%s.', 'wcdragonpay' ), '<a href="https://www.dragonpay.ph" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your dragonpay password.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sdragonpay Account%s.', 'wcdragonpay' ), '<a href="https://www.onlinepayment.com.my/dragonpay/" target="_blank">', '</a>' ),
                     'default' => ''
                 )
             );
@@ -173,30 +179,26 @@ function wcdragonpay_gateway_load() {
          * @return string
          */
         public function generate_form( $order_id ) {
-
-	    $order = new WC_Order( $order_id ); 
+            $order = new WC_Order( $order_id );	
             $pay_url = $this->pay_url;
-            $total = $order->order_total;
-            
-            
+            $total = $order->order_total;			
             if ( sizeof( $order->get_items() ) > 0 ) 
                 foreach ( $order->get_items() as $item )
                     if ( $item['qty'] )
                         $item_names[] = $item['name'] . ' x ' . $item['qty'];
 
             $desc = sprintf( __( 'Order %s' , 'woocommerce'), $order->get_order_number() ) . " - " . implode( ', ', $item_names );
-
+						
             $merchantid = $this->merchant_id;
-	    $txnid = $order->id;
-	    $amount = $order->order_total;
-	    $ccy = get_woocommerce_currency();
-	    $description = $desc;
-	    $email = $order->billing_email;
-	    $password = $this->password;
-     
+            $txnid = $order->id;
+            $amount = $order->order_total;
+            $ccy = get_woocommerce_currency();
+            $description = $desc;
+            $email = $order->billing_email;
+            $password = $this->password;
             $digest_str = "$merchantid:$txnid:$amount:$ccy:$description:$email:$password";  
-            $digest = sha1($digest_str);
-                        
+            $digest = sha1($digest_str);  
+
             $dragonpay_args = array(
                 'merchantid' => $this->merchant_id,
                 'txnid' => $order->id,
@@ -204,8 +206,7 @@ function wcdragonpay_gateway_load() {
                 'ccy' => get_woocommerce_currency(),
                 'description' => $desc,
                 'email' => $order->billing_email,
-                'digest' => $digest,
-                
+                'digest' => $digest
             );
 
             $dragonpay_args_array = array();
@@ -213,10 +214,10 @@ function wcdragonpay_gateway_load() {
             foreach ($dragonpay_args as $key => $value) {
                 $dragonpay_args_array[] = "<input type='hidden' name='".$key."' value='". $value ."' />";
             }
-            
-            return "<form action='".$pay_url."/' method='get' id='dragonpay_payment_form' name='dragonpay_payment_form'>"
+			
+            return "<form action='".$pay_url."' method='get' id='dragonpay_payment_form' name='dragonpay_payment_form'>"
                     . implode('', $dragonpay_args_array)
-                    . "<input type='submit' class='button-alt' id='submit_dragonpay_payment_form' value='" . __('Pay via Dragonpay', 'woothemes') . "' /> "
+                    . "<input type='submit' class='button-alt' id='submit_dragonpay_payment_form' value='" . __('Pay via dragonpay', 'woothemes') . "' /> "
                     . "<a class='button cancel' href='" . $order->get_cancel_order_url() . "'>".__('Cancel order &amp; restore cart', 'woothemes')."</a>"
                     . "<script>document.dragonpay_payment_form.submit();</script>"
                     . "</form>";
@@ -257,153 +258,64 @@ function wcdragonpay_gateway_load() {
         }
 
         /**
-         * Check for payment gateway Response
+         * Check for Dragonpay Response
          *
          * @access public
          * @return void
          */
-        function check_ipn_response() {
-            @ob_clean();
-
-            if ( !( $_GET['nbcb'] )) {
-                do_action( "valid_dragonpay_request_returnurl", $_GET );
-            } 
-            else if ( $_GET['nbcb'] ) {
-                do_action ( "valid_dragonpay_request_callback", $_GET );
-            }
-            else {
-                wp_die( "Dragonpay Request Failure" );
-            }
-        }
-        
+       
+		
         /**
-         * This part is returnurl function for the payment gateway
+         * This part is returnurl function for dragonpay
          * 
          * @global mixed $woocommerce
          */
         function check_dragonpay_response_returnurl() {
             global $woocommerce;
+			
+			//Get parameters from dragonpay response
 
-            $amount = $_POST['amount'];
-            $orderid = $_POST['orderid'];
-            $appcode = $_POST['appcode'];
-            $tranID = $_POST['tranID'];
-            $domain = $_POST['domain'];
-            $status = $_POST['status'];
-            $currency = $_POST['currency'];
-            $paydate = $_POST['paydate'];
-            $channel = $_POST['channel'];
-            $skey = $_POST['skey'];
-
-            $vkey = $this->password;
-            $order = new WC_Order( $orderid );
-
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
-
-
-
-            $referer = "<br>Referer: ReturnURL";
-
-             if ($status == "00") {
-                    // Invalid transaction
-                    if( $skey != $key1 )
-                    {
-                    $order->add_order_note('Dragonpay Payment Status: FAILED'.'<br>Transaction ID: ' . $tranID . $referer);
-                            $order->update_status('failed', sprintf(__('Payment %s via Dragonpay.', 'woocommerce'), $tranID ) );
-                            $woocommerce->cart->empty_cart();
-                            wp_redirect($order->get_view_order_url());
-                            //wp_redirect($order->get_cancel_order_url());
-                    }
-                    else
-                    {
-                            $order->add_order_note('Dragonpay Payment Status: SUCCESSFUL'.'<br>Transaction ID: ' . $tranID . $referer);                                
-                            $order->payment_complete();
-                            wp_redirect($order->get_checkout_order_received_url());
-                    }        
-                exit;
-            } 
-            else if ($status == "22") { 
-                $order->add_order_note('Dragonpay Payment Status: Invalid Transaction'.'<br>Transaction ID: ' . $tranID . $referer);
-                $order->update_status('pending', sprintf(__('Payment %s via Dragonpay.', 'woocommerce'), $tranID ) );
-                $order->payment_complete($tranID);
-                wp_redirect($order->get_view_order_url());
-                exit;
-            }
-            else if ($status == "11") {  //status 11 which is failed
-                $order->add_order_note('Dragonpay Payment Status: FAILED'.'<br>Transaction ID: ' . $tranID . $referer);
-                $order->update_status('failed', sprintf(__('Payment %s via Dragonpay.', 'woocommerce'), $tranID ) );
-                //$order->payment_complete();
-                $woocommerce->cart->empty_cart();
-                wp_redirect($order->get_view_order_url());
-                //wp_redirect($order->get_cancel_order_url());
-                exit;
-            }
-            else   {  //invalid transaction
-                $order->add_order_note('Dragonpay Payment Status: FAILED'.'<br>Transaction ID: ' . $tranID . $referer);
-                $order->update_status('failed', sprintf(__('Payment %s via Dragonpay.', 'woocommerce'), $tranID ) );
-                $woocommerce->cart->empty_cart();
-                wp_redirect($order->get_view_order_url());
-                //wp_redirect($order->get_cancel_order_url());
-                exit;
-            }
-        }
-
-        /**
-         * 
-         * @global mixed $woocommerce
-         */
-        function check_dragonpay_response_callback() {
-            global $woocommerce;
-                        
-            $nbcb = $_POST['nbcb'];
-            $amount = $_POST['amount'];             
-            $orderid = $_POST['orderid'];
-            $tranID = $_POST['tranID'];
-            $status = $_POST['status'];
-            $domain = $_POST['domain']; 
-            $currency = $_POST['currency'];
-            $appcode = $_POST['appcode'];
-            $paydate = $_POST['paydate'];
-            $skey = $_POST['skey'];
-            $vkey = $this->password;
-            
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
-
+            /*
+             *  Your code here
+             */
 
             $order = new WC_Order( $orderid );
-            $referer = "<br>Referer: CallbackURL";  
-            
-           if ($status == "00") {
-                if( $skey != $key1 )
-                {
-                    $order->add_order_note('Dragonpay Payment Status: FAILED'.'<br>Transaction ID: ' . $tranID . $referer);
-                    $order->update_status('failed', sprintf(__('Payment %s via Dragonpay.', 'woocommerce'), $tranID ) );
-                }
-                else
-                {               
-                    $order->add_order_note('Dragonpay Payment Status: SUCCESSFUL'.'<br>Transaction ID: ' . $tranID . $referer);                                
-                    $order->payment_complete();
-                }
-            } 
-            else if ($status == "22") { 
-                $order->add_order_note('Dragonpay Payment Status: Invalid Transaction'.'<br>Transaction ID: ' . $tranID . $referer);
-                $order->update_status('on-hold', sprintf(__('Payment %s via Dragonpay.', 'woocommerce'), $tranID ) );
-            }
-            else { //status 11 which is failed
-                $order->add_order_note('Dragonpay Payment Status: FAILED'.'<br>Transaction ID: ' . $tranID . $referer);
-                $order->update_status('failed', sprintf(__('Payment %s via Dragonpay.', 'woocommerce'), $tranID ) );
-            }
-        }
+           
 
+            if ($status == 'S') {
+                $order->add_order_note('dragonpay Payment Status: SUCCESSFUL'.'<br>Transaction ID: ' . $tranID . $referer);								
+                $order->payment_complete();
+                wp_redirect($order->get_checkout_order_received_url());
+                exit;
+            }
+			else if ($status == "P") { 
+                $order->add_order_note('dragonpay Payment Status: PENDING');
+                $order->update_status('pending', sprintf(__('Payment %s via dragonpay.', 'woocommerce')) );
+                wp_redirect($order->get_checkout_order_received_url());
+                exit;
+            }
+            else if ($status == "F") { 
+                $order->add_order_note('dragonpay Payment Status: FAILED');
+                $order->update_status('failed', sprintf(__('Payment %s via dragonpay.', 'woocommerce')) );
+                wp_redirect($order->get_cancel_order_url());
+                exit;
+            } 
+            else  {
+                $order->add_order_note('dragonpay Payment Status: Invalid Transaction');
+                $order->update_status('on-hold', sprintf(__('Payment %s via dragonpay.', 'woocommerce')) );
+                wp_redirect($order->get_cancel_order_url());
+                exit;
+            }	
+        }
+		
+	
         /**
          * Adds error message when not configured the app_key.
          * 
          */
         public function merchant_id_missing_message() {
             $message = '<div class="error">';
-            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should inform your Merchant ID in Dragonpay. %sClick here to configure!%s' , 'wcdragonpay' ), '<a href="' . get_admin_url() . 'admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_Dragonpay_Gateway">', '</a>' ) . '</p>';
+            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should inform your Merchant ID in dragonpay. %sClick here to configure!%s' , 'wcdragonpay' ), '<a href="' . get_admin_url() . 'admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_Dragonpay_Gateway">', '</a>' ) . '</p>';
             $message .= '</div>';
             echo $message;
         }
@@ -412,9 +324,9 @@ function wcdragonpay_gateway_load() {
          * Adds error message when not configured the app_secret.
          * 
          */
-        public function verify_key_missing_message() {
+        public function password_missing_message() {
             $message = '<div class="error">';
-            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should inform your Verify Key in Dragonpay. %sClick here to configure!%s' , 'wcdragonpay' ), '<a href="' . get_admin_url() . 'admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_Dragonpay_Gateway">', '</a>' ) . '</p>';
+            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should inform your password in dragonpay. %sClick here to configure!%s' , 'wcdragonpay' ), '<a href="' . get_admin_url() . 'admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_Dragonpay_Gateway">', '</a>' ) . '</p>';
             $message .= '</div>';
             echo $message;
         }
