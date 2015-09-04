@@ -111,7 +111,7 @@ function wcdragonpay_gateway_load() {
          * @return bool
          */
         public function is_valid_for_use() {
-            if ( !in_array( get_woocommerce_currency() , array( 'MYR' ) ) ) {
+            if ( !in_array( get_woocommerce_currency() , array( 'PHP' ) ) ) {
                 return false;
             }
             return true;
@@ -125,7 +125,7 @@ function wcdragonpay_gateway_load() {
         public function admin_options() {
             ?>
             <h3><?php _e( 'Dragonpay Online Payment', 'wcdragonpay' ); ?></h3>
-            <p><?php _e( 'Dragonpay Online Payment works by sending the user to dragonpay to enter their payment information.', 'wcdragonpay' ); ?></p>
+            <p><?php _e( 'Dragonpay Online Payment works by sending the user to Dragonpay to enter their payment information.', 'wcdragonpay' ); ?></p>
             <table class="form-table">
                 <?php $this->generate_settings_html(); ?>
             </table><!--/.form-table-->
@@ -149,24 +149,24 @@ function wcdragonpay_gateway_load() {
                     'title' => __( 'Title', 'wcdragonpay' ),
                     'type' => 'text',
                     'description' => __( 'This controls the title which the user sees during checkout.', 'wcdragonpay' ),
-                    'default' => __( 'dragonpay Malaysia Online Payment', 'wcdragonpay' )
+                    'default' => __( 'Dragonpay Online Payment', 'wcdragonpay' )
                 ),
                 'description' => array(
                     'title' => __( 'Description', 'wcdragonpay' ),
                     'type' => 'textarea',
                     'description' => __( 'This controls the description which the user sees during checkout.', 'wcdragonpay' ),
-                    'default' => __( 'Pay with dragonpay Malaysia Online Payment', 'wcdragonpay' )
+                    'default' => __( 'Pay with Dragonpay Online Payment', 'wcdragonpay' )
                 ),
                 'merchant_id' => array(
                     'title' => __( 'Merchant ID', 'wcdragonpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your dragonpay Merchant ID.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sdragonpay Account%s.', 'wcdragonpay' ), '<a href="https://www.onlinepayment.com.my/dragonpay/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Dragonpay Merchant ID.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sDragonpay Account%s.', 'wcdragonpay' ), '<a href="https://www.dragonpay.ph/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'password' => array(
                     'title' => __( 'Password', 'wcdragonpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your dragonpay password.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sdragonpay Account%s.', 'wcdragonpay' ), '<a href="https://www.onlinepayment.com.my/dragonpay/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Dragonpay password.', 'wcdragonpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sDragonpay Account%s.', 'wcdragonpay' ), '<a href="https://www.dragonpay.ph/" target="_blank">', '</a>' ),
                     'default' => ''
                 )
             );
